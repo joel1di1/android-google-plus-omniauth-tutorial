@@ -1,6 +1,6 @@
 #How to authenticate an Android application to a Rails server with [Omniauth](https://github.com/intridea/omniauth)
 
-Lately, I have been in charge of the Android application development at elCurator. One of the new features we wanted was to be able to sign in with a Google account. At first I thought it would be easy to implement it with the Google+ SDK, and theoritically, it was. But in practice I ran into several issues which made me think that it is not trivial at all !
+Lately, I have been in charge of the Android application development at elCurator. One of the new features we wanted was to be able to sign in with a Google account. At first I thought it would be easy to implement it with the Google+ SDK, and theoritically, it was. But in practice I ran into several issues which made me think that it is not trivial at all!
 
 I also noticed that the documentations and tutorials I could find on the web could be a little confusing, and I couldn't find a tutorial for my specific need.
 
@@ -12,12 +12,12 @@ I made a sample Android application and a sample Rails server to illustrate what
 
 Here are the instructions to run it on your machine.
 
-First of all :
+First of all:
 	
 	$ git clone https://github.com/elcurator/android-google-plus-omniauth-tutorial
 	$ cd android-google-plus-omniauth-tutorial
 
-For the rails server :
+For the rails server:
 
 	$ cd web
 	$ echo "GOOGLE_KEY=your_google_key_here" >> .env
@@ -25,9 +25,9 @@ For the rails server :
 	$ bundle
 	$ foreman start
 	
-For the android application :
+For the Android application:
 
-In the `app.gradle` file
+In the `app.gradle` file:
 
 - replace the `BASE_URL` config field by your server url.
 - replace the `GOOGLE_SERVER_CLIENT_ID` config field by your web application client id.
@@ -50,9 +50,9 @@ Obviously, this first part needs to be implemented in our Android application. L
 
 - To be able to use the Google+ SDK, follow [this documentation](https://developers.google.com/+/mobile/android/getting-started?hl=en).
 
-> 	Notes : 
+> 	Notes: 
 > 
->  - To register the installed application in the Google console, you need to specify a *SHA-1 fingerprint*. In the documentation they tell us to use the default debug keystore. **Don't use it for a signed APK, it won't work** ! To generate a signed APK, you must use your own keystore. To work properly with Google+ OAuth, the *SHA-1 fingerprint* must be generated from the keystore you used to sign your APK.
+>  - To register the installed application in the Google console, you need to specify a *SHA-1 fingerprint*. In the documentation they tell us to use the default debug keystore. **Don't use it for a signed APK, it won't work**! To generate a signed APK, you must use your own keystore. To work properly with Google+ OAuth, the *SHA-1 fingerprint* must be generated from the keystore you used to sign your APK.
 > 
 > - If you are using Gradle with plural flavors in your `build.gradle` file, be carefull to put the adequate flavor's `applicationId` in the `package name` field when creating the installed application in the Google console.
 > 
@@ -66,7 +66,7 @@ Obviously, this first part needs to be implemented in our Android application. L
 
 - You can now add the sign-in button by following [this documentation](https://developers.google.com/+/mobile/android/sign-in?hl=en). Be carefull, the first part of the documentation tells you how to connect your client directly to Google+, but what we want is to **enable our Rails server to access to our client Google+ informations**. You will need to follow what's said in the **last part of the documentation** (*Enable server-side API access for your app*)
 
-> 	Note :
+> 	Note:
 > 	To request the one-time code, you need to use a **scope**. In this scope, you need to specify a **server client id**. This id is actually the one you got from the Google console in the previous step.
 
 If you correctly followed the documentation linked above, you should be able to successfully request a one-time code with the Google+ SDK, meaning we are now at the step 4 of the flow diagram.
@@ -77,13 +77,13 @@ To implement this step, we need a route we can call from our client to post a on
 
 Let's see what we need on the server side to implement this route.
 
-- First, add this line in your `Gemfile` :
+- First, add this line in your `Gemfile`:
 
 		gem 'omniauth-google-oauth2', github: 'zquestz/omniauth-google-oauth2', branch: 'master'
 	
 	I made a [pull request](https://github.com/zquestz/omniauth-google-oauth2/pull/165) to make omniauth-google-oauth2 respond to our needs. It has not been integrated in the last version yet, that's why we need to directly fetch the repository.
 
-- Create a `SessionsController` and add an action like this :
+- Create a `SessionsController` and add an action like this:
 	```ruby
 	def create_from_google_oauth2
 		# Retrieve the user informations that omniauth fetched for us 
@@ -100,7 +100,7 @@ Let's see what we need on the server side to implement this route.
   	end
   	```
   	    		
-- Create the file `config/initializers/omniauth.rb` with this code :
+- Create the file `config/initializers/omniauth.rb` with this code:
 
 	```ruby
 	# Setup the google oauth2 provider
@@ -109,13 +109,13 @@ Let's see what we need on the server side to implement this route.
 	end
 	```
 
-> 	Notes : 
+> 	Notes: 
 > 
 > - You can find the web client id and secret in the [Google console](https://console.developers.google.com).
 > 
 > - The web client id must be the same than the one used in our android application.
 
-- Add this to the `routes.rb` file :
+- Add this to the `routes.rb` file:
 	```ruby
 	post '/auth/:provider/callback', to: 'sessions#create_from_google_oauth2'	
 	```
@@ -135,11 +135,11 @@ At this point, when we post on the route `/auth/google_oauth/callback` with a `c
   	end
   	```
 
-	Then, add this code to our `config/initializers/omniauth.rb` file so omniauth knows which action to call when an error occurs :
+	Then, add this code to our `config/initializers/omniauth.rb` file so omniauth knows which action to call when an error occurs:
 	
 		OmniAuth.config.on_failure = SessionsController.action(:oauth_failure)
 
-- We are ready to call the authentication route from our client. Using the library Ion to perform the request, here is the code we can add to our login activity, right after having fetched the one-time code from Google :
+- We are ready to call the authentication route from our client. Using the library Ion to perform the request, here is the code we can add to our login activity, right after having fetched the one-time code from Google:
 
 	```java
 	Ion.with(this)
@@ -154,7 +154,7 @@ It's actually what is `omniauth-google-oauth2` doing for us. Don't bother with t
 
 ### Server should confirm "fully logged in" to client
 
-In the android application, replace the authentication request code you already put by this :
+In the android application, replace the authentication request code you already use by this:
 
 ```java
 Ion.with(this)
