@@ -13,7 +13,7 @@ I made a sample Android application and a sample Rails server to illustrate what
 Here are the instructions to run it on your machine.
 
 First of all :
-
+	
 	$ git clone https://github.com/elcurator/android-google-plus-omniauth-tutorial
 	$ cd android-google-plus-omniauth-tutorial
 
@@ -84,20 +84,21 @@ Let's see what we need on the server side to implement this route.
 	I made a [pull request](https://github.com/zquestz/omniauth-google-oauth2/pull/165) to make omniauth-google-oauth2 respond to our needs. It has not been integrated in the last version yet, that's why we need to directly fetch the repository.
 
 - Create a `SessionsController` and add an action like this :
+	```ruby
+	def create_from_google_oauth2
+		# Retrieve the user informations that omniauth fetched for us 
+		user_google_data = request.env['omniauth.auth']['info'].to_hash
 
-		def create_from_google_oauth2
-			# Retrieve the user informations that omniauth fetched for us
-    		user_google_data = request.env['omniauth.auth']['info'].to_hash
-
-    		# You should use the session handler you prefer here to create a session
-    		@user = {
-      			email: user_google_data['email'],
-      			authentication_token: SecureRandom.hex
-    		}
-
-			# Render a json success template
-    		render 'create_success'
-  		end
+		# You should use the session handler you prefer here to create a session
+		@user = {
+			email: user_google_data['email'],
+			authentication_token: SecureRandom.hex
+		}
+    		
+		# Render a json success template
+		render 'create_success'
+  	end
+  	```
   	    		
 - Create the file `config/initializers/omniauth.rb` with this code :
 
@@ -113,21 +114,24 @@ Let's see what we need on the server side to implement this route.
 > - The web client id must be the same than the one used in our android application.
 
 - Add this to the `routes.rb` file :
-
-		post '/auth/:provider/callback', to: 'sessions#create_from_google_oauth2'		
+	```ruby
+	post '/auth/:provider/callback', to: 'sessions#create_from_google_oauth2'	
+	```
 At this point, when we post on the route `/auth/google_oauth/callback` with a `code` and a `redirect_uri` in set in the body, omniauth fetches the user informations then calls our `create_from_google_oauth2` action.
 
 - If the one-time code is already used, or if it is expired, Google responds with an `invalid_grant` error. Since we don't want to have to parse a big html error page in our client, we need to catch this error, and respond with a json formatted error.
 
 	To do so, let's add an action in our `SessionsController`
 
-		def oauth_failure
-			# Retrieve the error
-    		@error = request.env['omniauth.error']
-
-			# Render a json error template
+	```ruby
+	def oauth_failure
+		# Retrieve the error
+	    	@error = request.env['omniauth.error']
+	    	
+		# Render a json error template
     		render 'create_fail', status: 401
-  		end
+  	end
+  	```
 
 	Then, add this code to our `config/initializers/omniauth.rb` file so omniauth knows which action to call when an error occurs :
 	
@@ -135,26 +139,28 @@ At this point, when we post on the route `/auth/google_oauth/callback` with a `c
 
 - We are ready to call the authentication route from our client. Using the library Ion to perform the request, here is the code we can add to our login activity, right after having fetched the one-time code from Google :
 
-		Ion.with(this)
-			.load(BuildConfig.BASE_URL + "/auth/google_oauth2/callback")
-    		.setBodyParameter("code", code)
-			.setBodyParameter("redirect_uri", BuildConfig.GOOGLE_REDIRECT_URI)
-			.asJsonObject()
-			.setCallback(new FutureCallback<JsonObject>() {
-				@Override
-				public void onCompleted(Exception e, JsonObject result) {
-					// Invalidate the code as soon as the server consumed it.
-					GoogleAuthUtil.invalidateToken(getApplicationContext(), code);
+	```java
+	Ion.with(this)
+		.load(BuildConfig.BASE_URL + "/auth/google_oauth2/callback")
+		.setBodyParameter("code", code)
+		.setBodyParameter("redirect_uri", BuildConfig.GOOGLE_REDIRECT_URI)
+		.asJsonObject()
+		.setCallback(new FutureCallback<JsonObject>() {
+			@Override
+			public void onCompleted(Exception e, JsonObject result) {
+				// Invalidate the code as soon as the server consumed it.
+				GoogleAuthUtil.invalidateToken(getApplicationContext(), code);
+				
+				Toast.makeText(
+					LoginActivity.this,
+					result.get("error") != null ?
+						"error : " + result.get("description").getAsString() :
+						"connected as : " + result.get("authentication_email").getAsString(),
+					Toast.LENGTH_LONG
+				).show();
+			}
+		});
+	```
 
-					Toast.makeText(
-						LoginActivity.this,
-						result.get("error") != null ?
-							"error : " + result.get("description").getAsString() :
-							"connected as : " + result.get("authentication_email").getAsString(),
-						Toast.LENGTH_LONG
-					).show();
-				}
-			});
-		
 	> Note : don't forget to invalidate the one-time code as soon as it has been consumed by the server, otherwise, the next time the user will try to authenticate, he will get the same code from Google, tries to use it, and get an `invalid_grant` error.
 
