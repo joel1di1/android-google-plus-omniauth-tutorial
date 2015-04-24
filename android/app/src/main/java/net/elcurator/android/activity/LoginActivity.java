@@ -168,10 +168,15 @@ public class LoginActivity extends Activity implements View.OnClickListener, Goo
             // network or server error, the call is expected to succeed if you try again later.
             // Don't attempt to call again immediately - the request is likely to
             // fail, you'll hit quotas or back-off.
-            Toast.makeText(this,
-                    "Network or server error, the call is expected to succeed if you try again later",
-                    Toast.LENGTH_LONG
-            ).show();
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(LoginActivity.this,
+                            "Network or server error, the call is expected to succeed if you try again later",
+                            Toast.LENGTH_LONG
+                    ).show();
+                }
+            });
             return null;
         } catch (UserRecoverableAuthException e) {
             // Requesting an authorization code will always throw
@@ -184,11 +189,16 @@ public class LoginActivity extends Activity implements View.OnClickListener, Goo
         } catch (GoogleAuthException authEx) {
             // Failure. The call is not expected to ever succeed so it should not be
             // retried.
-            Toast.makeText(
-                    this,
-                    "Permanent error, something is wrong with your configuration.",
-                    Toast.LENGTH_LONG
-            ).show();
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(
+                            LoginActivity.this,
+                            "Permanent error, something is wrong with your configuration.",
+                            Toast.LENGTH_LONG
+                    ).show();
+                }
+            });
             return null;
         } catch (Exception e) {
             throw new RuntimeException(e);
