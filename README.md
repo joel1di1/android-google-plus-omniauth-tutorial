@@ -4,7 +4,7 @@ Lately, I have been in charge of the Android application development at elCurato
 
 I also noticed that the documentations and tutorials I could find on the web could be a little confusing, and I couldn't find a tutorial for my specific need.
 
-That's why I decided to a tutorial which explains, step by step, how to make an Android application authenticate to a Rails server, using the gem [Omniauth](https://github.com/intridea/omniauth).
+That's why I decided to write a tutorial to explain step by step, how to make an Android application authenticate to a Rails server, using the gem [Omniauth](https://github.com/intridea/omniauth).
 
 ##Run the sample
 
