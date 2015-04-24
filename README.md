@@ -102,10 +102,12 @@ Let's see what we need on the server side to implement this route.
   	    		
 - Create the file `config/initializers/omniauth.rb` with this code :
 
-		# Setup the google oauth2 provider
-		Rails.application.config.middleware.use OmniAuth::Builder do
-  			provider :google_oauth2, 'your web client id', 'your web client secret', provider_ignores_state: true
-		end
+	```ruby
+	# Setup the google oauth2 provider
+	Rails.application.config.middleware.use OmniAuth::Builder do
+  		provider :google_oauth2, 'your web client id', 'your web client secret', provider_ignores_state: true
+	end
+	```
 
 > 	Notes : 
 > 
