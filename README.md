@@ -1,4 +1,4 @@
-##How to authenticate an Android application to a Rails server with [Omniauth](https://github.com/intridea/omniauth)
+#How to authenticate an Android application to a Rails server with [Omniauth](https://github.com/intridea/omniauth)
 
 Lately, I have been in charge of the Android application development at elCurator. One of the new features we wanted was to be able to sign in with a Google account. At first I thought it would be easy to implement it with the Google+ SDK, and theoritically, it was. But in practice I ran into several issues which made me think that it is not trivial at all !
 
@@ -6,7 +6,7 @@ I also noticed that the documentations and tutorials I could find on the web cou
 
 That's why I decided to a tutorial which explains, step by step, how to make an Android application authenticate to a Rails server, using the gem [Omniauth](https://github.com/intridea/omniauth).
 
-###Run the sample
+##Run the sample
 
 I made a sample Android application and a sample Rails server to illustrate what I am talking about in this article.
 
@@ -34,7 +34,7 @@ In the `app.gradle` file
 
 The project use gradle. You can either build it with gradle and run it on your android device manually, or open it with AndroidStudio and run it directly from there.
 
-###The flow
+##The flow
 
 Let's specify a little the flow we need to implement.
 
@@ -145,24 +145,41 @@ At this point, when we post on the route `/auth/google_oauth/callback` with a `c
 	Ion.with(this)
 		.load(BuildConfig.BASE_URL + "/auth/google_oauth2/callback")
 		.setBodyParameter("code", code)
-		.setBodyParameter("redirect_uri", BuildConfig.GOOGLE_REDIRECT_URI)
-		.asJsonObject()
-		.setCallback(new FutureCallback<JsonObject>() {
-			@Override
-			public void onCompleted(Exception e, JsonObject result) {
-				// Invalidate the code as soon as the server consumed it.
-				GoogleAuthUtil.invalidateToken(getApplicationContext(), code);
-				
-				Toast.makeText(
-					LoginActivity.this,
-					result.get("error") != null ?
-						"error : " + result.get("description").getAsString() :
-						"connected as : " + result.get("authentication_email").getAsString(),
-					Toast.LENGTH_LONG
-				).show();
-			}
-		});
+		.setBodyParameter("redirect_uri", BuildConfig.GOOGLE_REDIRECT_URI);
 	```
 
-	> Note : don't forget to invalidate the one-time code as soon as it has been consumed by the server, otherwise, the next time the user will try to authenticate, he will get the same code from Google, tries to use it, and get an `invalid_grant` error.
+### Server exchange one-time code for access and id tokens
 
+It's actually what is `omniauth-google-oauth2` doing for us. Don't bother with this step.
+
+### Server should confirm "fully logged in" to client
+
+In the android application, replace the authentication request code you already put by this :
+
+```java
+Ion.with(this)
+	.load(BuildConfig.BASE_URL + "/auth/google_oauth2/callback")
+	.setBodyParameter("code", code)
+	.setBodyParameter("redirect_uri", BuildConfig.GOOGLE_REDIRECT_URI)
+	.asJsonObject()
+	.setCallback(new FutureCallback<JsonObject>() {
+		@Override
+		public void onCompleted(Exception e, JsonObject result) {
+			// Invalidate the code as soon as the server consumed it.
+			GoogleAuthUtil.invalidateToken(getApplicationContext(), code);				
+			Toast.makeText(
+				LoginActivity.this,
+				result.get("error") != null ?
+					"error : " + result.get("description").getAsString() :
+					"connected as : " + result.get("authentication_email").getAsString(),
+				Toast.LENGTH_LONG
+			).show();
+		}
+	});
+```
+	
+> Note : we invalidate the one-time code as soon as it has been consumed by the server. Otherwise, the next time the user will try to authenticate, he will get the same code from Google, try to use it, and get an `invalid_grant` error.
+
+## I am open to your feedbacks
+
+Don't hesitate to make a pull request if you want to add or clarify some informations.
