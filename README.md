@@ -52,7 +52,7 @@ Obviously, this first part needs to be implemented in our Android application. L
 
 > 	Notes : 
 > 
->  - To register the installed application in the Google console, you need to specify a *SHA-1 fingerprint*. In the documentation they tell us to use the default debug keystore. **Don't use it for a signed APK, it won't work !**. To generate a signed APK, you must use your own keystore. To work properly with Google+ OAuth, the *SHA-1 fingerprint* must be generated from the keystore you used to sign your APK.
+>  - To register the installed application in the Google console, you need to specify a *SHA-1 fingerprint*. In the documentation they tell us to use the default debug keystore. **Don't use it for a signed APK, it won't work** ! To generate a signed APK, you must use your own keystore. To work properly with Google+ OAuth, the *SHA-1 fingerprint* must be generated from the keystore you used to sign your APK.
 > 
 > - If you are using Gradle with plural flavors in your `build.gradle` file, be carefull to put the adequate flavor's `applicationId` in the `package name` field when creating the installed application in the Google console.
 > 
