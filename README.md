@@ -180,6 +180,6 @@ Ion.with(this)
 	
 > Note : we invalidate the one-time code as soon as it has been consumed by the server. Otherwise, the next time the user will try to authenticate, he will get the same code from Google, try to use it, and get an `invalid_grant` error.
 
-## I am open to your feedbacks
+## Your feedbacks are welcome !
 
 Don't hesitate to make a pull request if you want to add or clarify some informations.
