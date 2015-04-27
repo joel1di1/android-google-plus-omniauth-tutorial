@@ -154,7 +154,7 @@ It's actually what is `omniauth-google-oauth2` doing for us. Don't bother with t
 
 ### Server should confirm "fully logged in" to client
 
-In the android application, replace the authentication request code you already use by this:
+In the android application, replace the authentication request code we already used by this:
 
 ```java
 Ion.with(this)
