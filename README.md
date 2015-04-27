@@ -1,14 +1,14 @@
-#How to authenticate an Android application to a Rails server with [Omniauth](https://github.com/intridea/omniauth)
+#How to authenticate an android application to a rails server with [Omniauth](https://github.com/intridea/omniauth)
 
-Lately, I have been in charge of the Android application development at elCurator. One of the new features we wanted was to be able to sign in with a Google account. At first I thought it would be easy to implement it with the Google+ SDK, and theoritically, it was. But in practice I ran into several issues which made me think that it is not trivial at all!
+At elCuraotr, I have been in charge of the android application development lately. One of the new features we wanted was to be able to sign in with a Google account. At first I thought it would be easy to implement it with the Google+ SDK, and theoritically, it was. But in practice I ran into several issues which made me think that it is not trivial at all!
 
 I also noticed that the documentations and tutorials I could find on the web could be a little confusing, and I couldn't find a tutorial for my specific need.
 
-That's why I decided to write a tutorial to explain step by step, how to make an Android application authenticate to a Rails server, using the gem [Omniauth](https://github.com/intridea/omniauth).
+That's why I decided to write a tutorial to explain step by step, how to make an android application authenticate to a rails server, using the gem [Omniauth](https://github.com/intridea/omniauth).
 
 ##Run the sample
 
-I made a sample Android application and a sample Rails server to illustrate what I am talking about in this article.
+I made a sample android application and a sample rails server to illustrate what I am talking about in this article.
 
 Here are the instructions to run it on your machine.
 
@@ -25,7 +25,7 @@ For the rails server:
 	$ bundle
 	$ foreman start
 	
-For the Android application:
+For the android application:
 
 In the `app.gradle` file:
 
@@ -40,13 +40,13 @@ Let's specify a little the flow we need to implement.
 
 ![Server side code flow](https://developers.google.com/+/images/server_side_code_flow.png)
 
-On the above diagram, the **Client** is our **Android application**, and the **Server** is our **Rails server**.
+On the above diagram, the **client** is our **android application**, and the **server** is our **rails server**.
 
 From now on, we are going to follow this diagram step by step.
 
 ###User clicks the sign-in button
 
-Obviously, this first part needs to be implemented in our Android application. Let's use the Google+ SDK to do so.
+Obviously, this first part needs to be implemented in our android application. Let's use the Google+ SDK to do so.
 
 - To be able to use the Google+ SDK, follow [this documentation](https://developers.google.com/+/mobile/android/getting-started?hl=en).
 
@@ -56,15 +56,15 @@ Obviously, this first part needs to be implemented in our Android application. L
 > 
 > - If you are using Gradle with plural flavors in your `build.gradle` file, be carefull to put the adequate flavor's `applicationId` in the `package name` field when creating the installed application in the Google console.
 > 
-> - If you are using Android Studio with Gradle, just add the play-services dependency in your `build.gradle` file:
+> - If you are using android Studio with Gradle, just add the play-services dependency in your `build.gradle` file:
 >
 		compile 'com.google.android.gms:play-services:7.0.0'
 
 >	  [Note you can now use some specific parts of the play-services if you don't use every google service.](http://developer.android.com/google/play-services/setup.html?hl=en)
 
-- Remember that we want to request a one-time code, which will then be used by our Rails server. To do so, we will need to specify which server we want to grant our server an access to the user's Google+ informations. That means we need to register a web application client in the [Google console](https://console.developers.google.com) under the same project than our installed application.
+- Remember that we want to request a one-time code, which will then be used by our rails server. To do so, we will need to specify which server we want to grant our server an access to the user's Google+ informations. That means we need to register a web application client in the [Google console](https://console.developers.google.com) under the same project than our installed application.
 
-- You can now add the sign-in button by following [this documentation](https://developers.google.com/+/mobile/android/sign-in?hl=en). Be carefull, the first part of the documentation tells you how to connect your client directly to Google+, but what we want is to **enable our Rails server to access to our client Google+ informations**. You will need to follow what's said in the **last part of the documentation** (*Enable server-side API access for your app*)
+- You can now add the sign-in button by following [this documentation](https://developers.google.com/+/mobile/android/sign-in?hl=en). Be carefull, the first part of the documentation tells you how to connect your client directly to Google+, but what we want is to **enable our rails server to access to our client Google+ informations**. You will need to follow what's said in the **last part of the documentation** (*Enable server-side API access for your app*)
 
 > 	Note:
 > 	To request the one-time code, you need to use a **scope**. In this scope, you need to specify a **server client id**. This id is actually the one you got from the Google console in the previous step.
