@@ -128,10 +128,10 @@ At this point, when we post on the route `/auth/google_oauth/callback` with a `c
 	```ruby
 	def oauth_failure
 		# Retrieve the error
-	    	@error = request.env['omniauth.error']
-	    	
+		@error = request.env['omniauth.error']
+		
 		# Render a json error template
-    		render 'create_fail', status: 401
+		render 'create_fail', status: 401
   	end
   	```
 
