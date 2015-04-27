@@ -32,7 +32,7 @@ In the `app.gradle` file:
 - replace the `BASE_URL` config field by your server url.
 - replace the `GOOGLE_SERVER_CLIENT_ID` config field by your web application client id.
 
-The project use gradle. You can either build it with gradle and run it on your android device manually, or open it with AndroidStudio and run it directly from there.
+The project uses gradle. You can either build it with gradle and run it on your android device manually, or open it with AndroidStudio and run it directly from there.
 
 ##The flow
 
