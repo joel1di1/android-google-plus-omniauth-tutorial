@@ -182,4 +182,4 @@ Ion.with(this)
 
 ## Your feedbacks are welcome !
 
-Don't hesitate to make a pull request if you want to add or clarify some informations.
+Feel free to make a pull request if you want to add or clarify some informations.
